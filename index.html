@@ -278,6 +278,12 @@ table.report-table thead tr{background:var(--panel);}
 table.report-table tbody tr:nth-child(even){background:rgba(255,255,255,0.02);}
 table.report-table tbody tr:hover{background:var(--panel);}
 .report-empty{text-align:center;color:var(--muted);padding:40px;font-size:13px;}
+.status-pie-wrap{display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
+.status-pie{width:140px;height:140px;border-radius:50%;flex-shrink:0;}
+.status-legend{display:flex;flex-direction:column;gap:9px;}
+.legend-row{display:flex;align-items:center;gap:8px;font-size:13px;font-family:'IBM Plex Mono';min-width:160px;}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.legend-count{margin-left:auto;font-weight:600;}
 
 @media print{
   body{background:#fff;color:#111;}
@@ -932,6 +938,31 @@ function renderReport(){
   monthTickets.forEach(t => { const d = t.department || 'Unspecified'; byDept[d] = (byDept[d]||0)+1; });
   const maxDept = Math.max(1, ...Object.values(byDept), 0);
 
+  const STATUS_COLORS = {'Open':'var(--blue)','In Progress':'var(--amber)','Resolved':'var(--mint)','Closed':'var(--muted)'};
+  const byStatus = {};
+  Object.keys(STATUS_COLORS).forEach(s => byStatus[s] = monthTickets.filter(t=>t.status===s).length);
+  const statusTotal = monthTickets.length;
+  let statusAcc = 0;
+  const statusGradient = Object.entries(byStatus).map(([s,count])=>{
+    const pct = statusTotal ? (count/statusTotal*100) : 0;
+    const part = `${STATUS_COLORS[s]} ${statusAcc}% ${statusAcc+pct}%`;
+    statusAcc += pct;
+    return part;
+  }).join(', ');
+
+  const purchaseTickets = monthTickets.filter(t=>t.problemType==='Purchase Request');
+  const APPROVAL_COLORS = {'Pending':'var(--amber)','Approved':'var(--mint)','Rejected':'var(--danger)'};
+  const byApproval = {};
+  Object.keys(APPROVAL_COLORS).forEach(s => byApproval[s] = purchaseTickets.filter(t=>(t.approvalStatus||'Pending')===s).length);
+  const approvalTotal = purchaseTickets.length;
+  let approvalAcc = 0;
+  const approvalGradient = Object.entries(byApproval).map(([s,count])=>{
+    const pct = approvalTotal ? (count/approvalTotal*100) : 0;
+    const part = `${APPROVAL_COLORS[s]} ${approvalAcc}% ${approvalAcc+pct}%`;
+    approvalAcc += pct;
+    return part;
+  }).join(', ');
+
   const sortedTickets = monthTickets.slice().sort((a,b)=>a.createdAt-b.createdAt);
 
   return `
@@ -978,6 +1009,34 @@ function renderReport(){
               <div class="breakdown-val">${count}</div>
             </div>
           `).join('') : `<div class="report-empty">No department data</div>`}
+        </div>
+
+        <div class="report-section">
+          <h3>Tickets by Status</h3>
+          ${monthTickets.length ? `
+          <div class="status-pie-wrap">
+            <div class="status-pie" style="background:conic-gradient(${statusGradient});"></div>
+            <div class="status-legend">
+              ${Object.entries(byStatus).map(([s,count])=>`
+                <div class="legend-row"><span class="legend-dot" style="background:${STATUS_COLORS[s]}"></span>${s}<span class="legend-count">${count}</span></div>
+              `).join('')}
+            </div>
+          </div>
+          ` : `<div class="report-empty">No ticket data</div>`}
+        </div>
+
+        <div class="report-section">
+          <h3>Purchase Approval Status</h3>
+          ${purchaseTickets.length ? `
+          <div class="status-pie-wrap">
+            <div class="status-pie" style="background:conic-gradient(${approvalGradient});"></div>
+            <div class="status-legend">
+              ${Object.entries(byApproval).map(([s,count])=>`
+                <div class="legend-row"><span class="legend-dot" style="background:${APPROVAL_COLORS[s]}"></span>${s}<span class="legend-count">${count}</span></div>
+              `).join('')}
+            </div>
+          </div>
+          ` : `<div class="report-empty">No purchase requests this month</div>`}
         </div>
 
         <div class="report-section">
