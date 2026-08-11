@@ -841,7 +841,7 @@ async function setApproval(id, decision){
   const t = tickets.find(x=>x.id===id);
   if(!t) return;
   t.approvalStatus = decision;
-  t.status = 'Closed';
+  t.status = decision==='Approved' ? 'In Progress' : 'Closed';
   t.updatedAt = Date.now();
   await saveTickets();
   closeModal();
