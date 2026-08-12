@@ -193,6 +193,8 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:
   padding:9px 11px;font-family:'IBM Plex Sans';font-size:13.5px;
 }
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--amber);}
+.field-highlight{background:rgba(60,125,217,0.08);border:1px solid var(--blue);border-radius:8px;padding:10px 12px 4px;}
+.field-highlight label{color:var(--blue);font-weight:700;}
 .field textarea{resize:vertical;min-height:70px;}
 .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;}
 .field-row{display:flex;gap:10px;}
@@ -746,7 +748,7 @@ function openTicketModal(existing){
     <div class="modal">
       <h3>${existing ? 'Edit Ticket · '+t.ticketNo : 'New Ticket'}</h3>
       <div class="field-row">
-        <div class="field">
+        <div class="field field-highlight">
           <label>Name</label>
           <input id="f-name" value="${escapeHtml(t.name)}" placeholder="Requester's name">
         </div>
@@ -1219,7 +1221,7 @@ function renderStaffApp(){
       <div class="report-sheet" style="max-width:520px;margin:30px auto;">
         <h3 style="margin-top:0;font-family:'IBM Plex Mono';">Submit a New Ticket</h3>
         ${justSubmitted ? `<div style="background:var(--panel);border:1px solid var(--mint);color:var(--mint);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-family:'IBM Plex Mono';font-size:13px;">✓ Thank you! Your ticket has been submitted successfully. Admin will review it shortly.</div>` : ''}
-        <div class="field">
+        <div class="field field-highlight">
           <label>Staff Name</label>
           <input id="s-name" placeholder="Your name">
         </div>
