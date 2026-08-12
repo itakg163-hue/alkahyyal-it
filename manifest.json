@@ -1,0 +1,1 @@
+{"name": "AlKhayyalIT - Ticket and Work Log System", "short_name": "AlKhayyalIT", "start_url": "./index.html", "scope": "./", "display": "standalone", "background_color": "#DDE3EC", "theme_color": "#1B2635", "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}]}
