@@ -358,7 +358,7 @@ let firebaseReady = false;
 let db = null;
 try{
   if(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf('PASTE_') !== 0 && typeof firebase !== 'undefined'){
-    firebase.initializeApp(FIREBASE_CONFIG);
+    firebase.initializeApp(FIREBASE_CONFIG);      firebase.auth().signInAnonymously();
     db = firebase.database();
     firebaseReady = true;
   } else {
